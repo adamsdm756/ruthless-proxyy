@@ -6,7 +6,7 @@ app.use(cors({ origin: "*", methods: "GET,POST", allowedHeaders: "Content-Type, 
 app.use(express.json());
 
 // ✅ Your RunPod Ollama endpoint (CORRECT)
-const OLLAMA = "https://wlxeu7erob0udp-11434.proxy.runpod.net";
+const OLLAMA = "https://bfcye3ea776gfr-11434.proxy.runpod.net";
 
 // Health check → forwards to Ollama /api/tags
 app.get("/api/ping", async (_req, res) => {
