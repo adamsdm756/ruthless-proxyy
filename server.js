@@ -1,26 +1,23 @@
-const express = require("express");
-const cors = require("cors");
-const fetch = require("node-fetch");
+import express from "express";
+import cors from "cors";
+import fetch from "node-fetch";
 
 const app = express();
 
-// === CONFIG ===
 const PORT = process.env.PORT || 5000;
 const OLLAMA_API = "https://bfcye3ea776gfr-11434.proxy.runpod.net";
 
-// === MIDDLEWARE ===
 app.use(express.json());
 app.use(
   cors({
-    origin: "*", // allow all (you can later restrict)
+    origin: "*",
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
   })
 );
 
-// === ROUTES ===
 app.get("/", (req, res) => {
-  res.send("✅ Ruthless Proxy API running");
+  res.send("✅ Ruthless Proxy API running (ESM)");
 });
 
 app.get("/api/ping", (req, res) => {
@@ -61,7 +58,6 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
-// === START SERVER ===
 app.listen(PORT, () => {
   console.log(`✅ Ruthless Proxy API live on port ${PORT}`);
   console.log(`🔗 Connected to Ollama at ${OLLAMA_API}`);
