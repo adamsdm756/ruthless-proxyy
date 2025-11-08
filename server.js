@@ -50,7 +50,8 @@ app.post("/api/generate", async (req, res) => {
     chatHistory.push({ role: "user", content: prompt });
 
     // 2️⃣ Build conversation string
-    const combined = chatHistory.map(m => `${m.role}: ${m.content}`).join("\n");
+    const combined = chatHistory.map(m => m.content).join("\n");
+
 
     // 3️⃣ Ask Ollama with full context
     const response = await fetch(`${OLLAMA_API}/api/generate`, {
