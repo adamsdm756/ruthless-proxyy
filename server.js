@@ -43,7 +43,7 @@ app.get("/api/tags", async (req, res) => {
 // === GENERATE with short-term memory ===
 app.post("/api/generate", async (req, res) => {
   const { prompt, model } = req.body;
-  const selectedModel = model || "ruthlessai:latest";
+    const selectedModel = model || "ruthless-mistral";
 
   try {
     // 1️⃣ Save user message
