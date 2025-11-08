@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 const app = express();
 
 const PORT = process.env.PORT || 5000;
-const OLLAMA_API = "https://bfcye3ea776gfr-11434.proxy.runpod.net";
+const OLLAMA_API = "https://mvnc7c72ql6s77-11434.proxy.runpod.net";
 
 // 🧠 simple in-memory chat history (resets when server restarts)
 let chatHistory = [];
