@@ -7,14 +7,14 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const OLLAMA_API = "https://mvnc7c72ql6s77-11434.proxy.runpod.net";
 
-// 🧠 simple in-memory chat history (resets when server restarts)
+// Simple in-memory history (not used for generation now)
 let chatHistory = [];
 
 // === MIDDLEWARE ===
 app.use(express.json());
 app.use(
   cors({
-    origin: "*", // or "https://ruthlessaiiii.onrender.com" to restrict
+    origin: "*", // or "https://ruthlessaiiiii.onrender.com" to restrict
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
   })
@@ -22,55 +22,38 @@ app.use(
 
 // === ROUTES ===
 app.get("/", (req, res) => {
-  res.send("✅ Ruthless Proxy API running (ESM + Memory)");
+  res.send("✅ Ruthless Proxy API running (ESM + Memory fix)");
 });
 
-app.get("/api/ping", (req, res) => {
-  res.json({ ok: true, message: "Proxy running and reachable" });
-});
-
-app.get("/api/tags", async (req, res) => {
-  try {
-    const response = await fetch(`${OLLAMA_API}/api/tags`);
-    const data = await response.json();
-    res.json(data);
-  } catch (err) {
-    console.error("Error fetching tags:", err);
-    res.status(500).json({ error: "Failed to fetch Ollama tags" });
-  }
-});
-
-// === GENERATE with short-term memory ===
+// === GENERATE (stateless, no memory bleed) ===
 app.post("/api/generate", async (req, res) => {
   const { prompt, model } = req.body;
-    const selectedModel = model || "ruthless-mistral";
+  const selectedModel = model || "ruthless-mistral";
 
   try {
-    // 1️⃣ Save user message
-    chatHistory.push({ role: "user", content: prompt });
+    // Clear previous conversation (prevent memory contamination)
+    chatHistory = [];
 
-    // 2️⃣ Build conversation string
-    const combined = chatHistory.map(m => m.content).join("\n");
-
-
-    // 3️⃣ Ask Ollama with full context
+    // 🔥 Ask Ollama cleanly with only the current user prompt
     const response = await fetch(`${OLLAMA_API}/api/generate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         model: selectedModel,
-        prompt: combined,
+        prompt: prompt,
         stream: false,
       }),
     });
 
     const data = await response.json();
-    const reply = data.response || data.output?.map(o => o.content).join(" ") || "No reply";
+    const reply =
+      data.response ||
+      (data.output ? data.output.map((o) => o.content).join(" ") : "No reply");
 
-    // 4️⃣ Save assistant reply to memory
+    // Save to in-memory history (optional for display)
+    chatHistory.push({ role: "user", content: prompt });
     chatHistory.push({ role: "assistant", content: reply });
 
-    // 5️⃣ Send reply back
     res.json({ response: reply });
   } catch (err) {
     console.error("Error connecting to Ollama:", err);
@@ -78,7 +61,7 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
+// === START SERVER ===
 app.listen(PORT, () => {
-  console.log(`✅ Ruthless Proxy API live on port ${PORT}`);
-  console.log(`🔗 Connected to Ollama at ${OLLAMA_API}`);
+  console.log(`⚡ Ruthless Proxy API running on port ${PORT}`);
 });
